@@ -1,28 +1,19 @@
-from typing import List, Dict
-from models import NewsItem
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-class Database:
-    def __init__(self):
-        self.news: Dict[int, NewsItem] = {}
-        self.counter = 0
+SQLALCHEMY_DATABASE_URL = "sqlite:///./news.db"
 
-    def add_news(self, title: str, summary: str, url: str):
-        self.counter += 1
-        self.news[self.counter] = NewsItem(
-            id=self.counter,
-            title=title,
-            summary=summary,
-            url=url,
-            likes=0
-        )
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-    def get_all_news(self) -> List[NewsItem]:
-        return list(self.news.values())
+Base = declarative_base()
 
-    def increment_like(self, news_id: int) -> NewsItem:
-        if news_id in self.news:
-            self.news[news_id].likes += 1
-            return self.news[news_id]
-        return None
-
-db = Database()
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
