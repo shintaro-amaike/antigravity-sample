@@ -20,7 +20,20 @@ export const NewsCard: React.FC<NewsCardProps> = ({ item, onLike }) => {
 
     return (
         <div className="news-card">
+            {item.image_url && (
+                <div className="news-image">
+                    <img src={item.image_url} alt={item.title} loading="lazy" />
+                </div>
+            )}
             <div className="news-content">
+                <div className="news-meta">
+                    {item.source && <span className="news-source">{item.source}</span>}
+                    {item.published_date && (
+                        <span className="news-date">
+                            {new Date(item.published_date).toLocaleDateString()}
+                        </span>
+                    )}
+                </div>
                 <h2 className="news-title">
                     <a href={item.url} target="_blank" rel="noopener noreferrer">
                         {item.title}
